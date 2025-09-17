@@ -6,6 +6,8 @@
     <title>2048</title>
     <!-- VK Bridge -->
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <!-- Tone.js for sound -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
@@ -26,9 +28,10 @@
             --dark-ui-bg: #25253B;
             --dark-accent: #8A85FF;
             --dark-accent-hover: #A09CFF;
-
-            --c-2: #e9e9ed; --t-2: #5a5a6b;
-            --c-4: #dce2e8; --t-4: #5a5a6b;
+            
+            /* Обновленные цвета для лучшей видимости */
+            --c-2: #eee4da; --t-2: #776e65;
+            --c-4: #ede0c8; --t-4: #776e65;
             --c-8: #f2b179; --t-8: #ffffff;
             --c-16: #f59563; --t-16: #ffffff;
             --c-32: #f67c5f; --t-32: #ffffff;
@@ -99,11 +102,13 @@
         }
         .screen.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
 
+        .title-container { text-align: center; }
         #main-menu .title { font-size: 6rem; font-weight: 900; line-height: 1; text-shadow: 3px 3px 0 rgba(0,0,0,0.05); }
+        #main-menu .subtitle { font-size: 1.5rem; font-weight: 700; margin-top: -10px; letter-spacing: 2px; opacity: 0.7; }
         .light-theme #main-menu .title { color: #333; }
         .dark-theme #main-menu .title { color: var(--dark-text); }
 
-        .menu-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; }
+        .menu-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin-top: 20px; }
 
         .btn {
             padding: 20px;
@@ -122,7 +127,7 @@
         .light-theme .btn:hover { background-color: var(--light-accent-hover); }
         .dark-theme .btn:hover { background-color: var(--dark-accent-hover); }
         
-        .theme-switch-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 20px; }
+        .theme-switch-wrapper { display: flex; align-items: center; gap: 10px; }
         .theme-switch { display: inline-block; height: 30px; position: relative; width: 56px; }
         .theme-switch input { display:none; }
         .slider { background-color: #ccc; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 30px; }
@@ -131,7 +136,8 @@
         .dark-theme input:checked + .slider { background-color: var(--dark-accent); }
         input:checked + .slider:before { transform: translateX(26px); }
         
-        #game-screen { justify-content: flex-start; padding-top: 5vh; gap: 20px; }
+        /* Центрирование игрового поля */
+        #game-screen { justify-content: center; gap: 20px; }
         .game-area { display: flex; flex-direction: column; width: 100%; gap: 20px; }
 
         .game-header { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -212,6 +218,10 @@
         .dark-theme .stats-item { background-color: var(--dark-cell-bg); }
         .stats-item span:first-child { display: block; font-size: 0.8rem; opacity: 0.8; font-weight: 700; text-transform: uppercase;}
         .stats-item span:last-child { display: block; font-size: 1.7rem; font-weight: 700; }
+
+        /* Стили для меню настроек */
+        .settings-option { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px 0; }
+        .settings-option span:first-child { font-size: 1.2rem; font-weight: 700; }
         
         .toast-notification { position: fixed; bottom: 15%; left: 50%; transform: translateX(-50%); background-color: #2c3e50; color: white; padding: 12px 24px; border-radius: var(--border-radius); font-size: 0.9rem; font-weight: 700; z-index: 2000; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: none; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .toast-notification.show { opacity: 1; transform: translate(-50%, -20px); }
@@ -224,18 +234,14 @@
     <div class="container">
         <!-- Главное меню -->
         <div id="main-menu" class="screen">
-            <h1 class="title">2048</h1>
+            <div class="title-container">
+                <h1 class="title">2048</h1>
+                <p class="subtitle">мастерс</p>
+            </div>
             <div class="menu-buttons">
                 <button id="play-btn" class="btn">Играть</button>
                 <button id="stats-btn" class="btn">Статистика</button>
-            </div>
-            <div class="theme-switch-wrapper">
-                <span>☀️</span>
-                <label class="theme-switch">
-                    <input type="checkbox" id="theme-checkbox">
-                    <span class="slider"></span>
-                </label>
-                <span>🌙</span>
+                <button id="settings-btn" class="btn">Настройки</button>
             </div>
         </div>
 
@@ -269,10 +275,38 @@
         <div id="stats-overlay" class="overlay hidden"><div id="stats-content" class="overlay-content"><h2>Статистика</h2><div class="stats-grid"><div class="stats-item"><span>Лучший счет</span><span id="stats-best-score">0</span></div><div class="stats-item"><span>Всего игр</span><span id="stats-total-games">0</span></div><div class="stats-item"><span>Всего ходов</span><span id="stats-total-moves">0</span></div><div class="stats-item"><span>Макс. плитка</span><span id="stats-max-tile">0</span></div></div><div class="btn-group"><button id="stats-close-btn" class="btn">Закрыть</button></div></div></div>
         <div id="pause-overlay" class="overlay hidden"><div class="overlay-content"><h2>Пауза</h2><div class="btn-group"><button id="resume-btn" class="btn">Продолжить</button><button id="pause-restart-btn" class="btn">Начать заново</button><button id="pause-menu-btn" class="btn">Главное меню</button></div></div></div>
         <div id="game-over-overlay" class="overlay hidden"><div class="overlay-content"><h2 id="game-over-title">Игра окончена!</h2><p id="game-over-text">Вы проиграли. Попробуйте снова!</p><div class="btn-group"><button id="game-over-restart-btn" class="btn">Играть снова</button><button id="game-over-menu-btn" class="btn">Главное меню</button></div></div></div>
+        
+        <!-- Новое окно настроек -->
+        <div id="settings-overlay" class="overlay hidden">
+            <div class="overlay-content">
+                <h2>Настройки</h2>
+                <div class="settings-option">
+                    <span>Тема</span>
+                    <div class="theme-switch-wrapper">
+                        <span>☀️</span>
+                        <label class="theme-switch">
+                            <input type="checkbox" id="theme-checkbox">
+                            <span class="slider"></span>
+                        </label>
+                        <span>🌙</span>
+                    </div>
+                </div>
+                <div class="settings-option">
+                    <span>Звук</span>
+                    <label class="theme-switch">
+                        <input type="checkbox" id="sound-checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="btn-group">
+                    <button id="settings-close-btn" class="btn">Закрыть</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // --- ВСЯ JAVASCRIPT ЛОГИКА ОСТАЛАСЬ БЕЗ ИЗМЕНЕНИЙ ---
         document.addEventListener('DOMContentLoaded', () => {
             // --- Начальные константы и переменные ---
             const GRID_SIZE = 4;
@@ -286,10 +320,34 @@
             let isGameOver = false; 
             let isPaused = false; 
             let isHammerModeActive = false;
+            let isSoundOn = true; // --- Новая переменная для звука ---
             let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
             let stats = { bestScore: 0, totalGames: 0, totalMoves: 0, maxTile: 0 };
             let isVK = false;
             let vkUserId = null;
+
+            // --- Настройка звуков ---
+            let moveSound, mergeSound;
+            try {
+                moveSound = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.0, release: 0.1 } }).toDestination();
+                mergeSound = new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.2 } }).toDestination();
+            } catch (e) {
+                console.error("Tone.js could not be initialized. Sounds will be disabled.", e);
+                isSoundOn = false;
+            }
+
+            function playSound(type) {
+                if (!isSoundOn || !moveSound) return;
+                try {
+                    if (type === 'move') {
+                        moveSound.triggerAttackRelease('C3', '8n', Tone.now());
+                    } else if (type === 'merge') {
+                        mergeSound.triggerAttackRelease('E4', '8n', Tone.now());
+                    }
+                } catch (e) {
+                    console.error("Error playing sound", e);
+                }
+            }
             
             // --- Интеграция VK Bridge ---
             const STATS_VK_KEY = '2048GameStats_v2';
@@ -345,15 +403,21 @@
             // --- Основная инициализация ---
             function init() {
                 initVK();
-                setupTheme();
+                setupSettings();
                 setupEventListeners();
                 createGrid();
             }
             
-            function setupTheme() {
+            function setupSettings() {
+                // Настройка темы
                 const isDarkMode = localStorage.getItem('2048-theme') === 'dark';
                 document.body.className = isDarkMode ? 'dark-theme' : 'light-theme';
                 document.getElementById('theme-checkbox').checked = isDarkMode;
+
+                // Настройка звука
+                const soundSetting = localStorage.getItem('2048-sound');
+                isSoundOn = soundSetting === null ? true : soundSetting === 'on'; // Включен по умолчанию
+                document.getElementById('sound-checkbox').checked = isSoundOn;
             }
 
             function updateBestScoreDisplay() { bestScoreEl.textContent = stats.bestScore; }
@@ -379,7 +443,13 @@
             function hideOverlay(overlay) { overlay.classList.add('hidden'); }
 
             // --- Игровая логика ---
-            function startGame() {
+            async function startGame() {
+                // Запуск аудиоконтекста при первом действии пользователя
+                if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') {
+                    await Tone.start();
+                    console.log('Audio context started');
+                }
+
                 isGameOver = false; isPaused = false;
                 document.body.classList.remove('hammer-mode');
                 isHammerModeActive = false;
@@ -496,6 +566,7 @@
                 });
 
                 if (moved) {
+                    playSound(scoreIncrease > 0 ? 'merge' : 'move'); // --- Воспроизведение звука ---
                     stats.totalMoves++;
                     score += scoreIncrease;
                     
@@ -631,6 +702,8 @@
 
             function setupEventListeners() {
                 document.getElementById('play-btn').addEventListener('click', startGame);
+                
+                // Статистика
                 document.getElementById('stats-btn').addEventListener('click', () => {
                     document.getElementById('stats-best-score').textContent = stats.bestScore;
                     document.getElementById('stats-total-games').textContent = stats.totalGames;
@@ -639,18 +712,36 @@
                     showOverlay(document.getElementById('stats-overlay'));
                 });
                 document.getElementById('stats-close-btn').addEventListener('click', () => hideOverlay(document.getElementById('stats-overlay')));
+
+                // Настройки
+                document.getElementById('settings-btn').addEventListener('click', () => showOverlay(document.getElementById('settings-overlay')));
+                document.getElementById('settings-close-btn').addEventListener('click', () => hideOverlay(document.getElementById('settings-overlay')));
+
+                // Пауза
                 document.getElementById('pause-btn').addEventListener('click', togglePause);
                 document.getElementById('hammer-btn').addEventListener('click', activateHammer);
                 document.getElementById('resume-btn').addEventListener('click', resumeGame);
                 document.getElementById('pause-restart-btn').addEventListener('click', () => { resumeGame(); startGame(); });
                 document.getElementById('pause-menu-btn').addEventListener('click', () => { resumeGame(); showScreen(document.getElementById('main-menu')); });
+
+                // Конец игры
                 document.getElementById('game-over-restart-btn').addEventListener('click', () => { hideOverlay(document.getElementById('game-over-overlay')); startGame(); });
                 document.getElementById('game-over-menu-btn').addEventListener('click', () => { hideOverlay(document.getElementById('game-over-overlay')); showScreen(document.getElementById('main-menu')); });
+                
+                // Переключатель темы
                 document.getElementById('theme-checkbox').addEventListener('change', (e) => {
                     const isDark = e.target.checked;
                     document.body.className = isDark ? 'dark-theme' : 'light-theme';
                     localStorage.setItem('2048-theme', isDark ? 'dark' : 'light');
                 });
+                
+                // Переключатель звука
+                document.getElementById('sound-checkbox').addEventListener('change', (e) => {
+                    isSoundOn = e.target.checked;
+                    localStorage.setItem('2048-sound', isSoundOn ? 'on' : 'off');
+                });
+
+                // Управление
                 document.addEventListener('keydown', (e) => {
                     if (isPaused || isGameOver || !gameContainer.offsetParent) return;
                     switch (e.key) {
@@ -685,4 +776,5 @@
     </script>
 </body>
 </html>
+
 
