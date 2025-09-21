@@ -6,8 +6,6 @@
     <title>2048</title>
     <!-- VK Bridge -->
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-    <!-- Tone.js for sound -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
@@ -319,17 +317,6 @@
                         <span>🎶</span>
                     </div>
                 </div>
-                <div class="settings-option">
-                    <span>Звуки</span>
-                     <div class="theme-switch-wrapper">
-                        <span>🔇</span>
-                        <label class="theme-switch">
-                            <input type="checkbox" id="sound-checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                        <span>🔊</span>
-                    </div>
-                </div>
                 <div class="btn-group">
                     <button id="settings-close-btn" class="btn">Закрыть</button>
                 </div>
@@ -353,40 +340,12 @@
             let isGameOver = false; 
             let isPaused = false; 
             let isHammerModeActive = false;
-            let isSoundOn = true; 
             let isMusicOn = true;
             let wasMusicPlaying = false;
             let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
             let stats = { bestScore: 0, totalGames: 0, totalMoves: 0, maxTile: 0 };
             let isVK = false;
             let vkUserId = null;
-
-            // --- Sound setup ---
-            let moveSound, mergeSound, tapSound;
-            try {
-                moveSound = new Tone.Synth({ oscillator: { type: 'sine' }, volume: -20, envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination();
-                mergeSound = new Tone.Synth({ oscillator: { type: 'triangle' }, volume: -15, envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.2 } }).toDestination();
-                tapSound = new Tone.Synth({ oscillator: { type: 'sine' }, volume: -25, envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.1 } }).toDestination();
-            } catch (e) {
-                console.error("Tone.js could not be initialized. Sounds will be disabled.", e);
-                isSoundOn = false;
-            }
-
-            function playSound(type) {
-                if (!isSoundOn || typeof Tone === 'undefined' || Tone.context.state !== 'running') return;
-                try {
-                    const now = Tone.now();
-                    if (type === 'move') {
-                        moveSound.triggerAttackRelease('G4', '32n', now);
-                    } else if (type === 'merge') {
-                        mergeSound.triggerAttackRelease('C5', '16n', now);
-                    } else if (type === 'tap') {
-                        tapSound.triggerAttackRelease('A5', '64n', now);
-                    }
-                } catch (e) {
-                    console.error("Error playing sound", e);
-                }
-            }
             
             // --- VK Bridge Integration ---
             const STATS_VK_KEY = '2048GameStats_v2';
@@ -417,14 +376,12 @@
                             wasMusicPlaying = true;
                             bgMusic.pause();
                         }
-                        Tone.Master.mute = true;
                     }
                     if (e.detail.type === 'VKWebAppViewRestore') {
                         if (wasMusicPlaying) {
                             bgMusic.play().catch(e => console.error("Music play failed on restore", e));
                         }
                         wasMusicPlaying = false;
-                        Tone.Master.mute = !isSoundOn;
                     }
                 });
             }
@@ -472,10 +429,6 @@
                 const isDarkMode = localStorage.getItem('2048-theme') === 'dark';
                 document.body.className = isDarkMode ? 'dark-theme' : 'light-theme';
                 document.getElementById('theme-checkbox').checked = isDarkMode;
-
-                const soundSetting = localStorage.getItem('2048-sound');
-                isSoundOn = soundSetting === null ? true : soundSetting === 'on';
-                document.getElementById('sound-checkbox').checked = isSoundOn;
 
                 const musicSetting = localStorage.getItem('2048-music');
                 isMusicOn = musicSetting === null ? true : musicSetting === 'on';
@@ -623,7 +576,6 @@
                 });
 
                 if (moved) {
-                    playSound(scoreIncrease > 0 ? 'merge' : 'move');
                     stats.totalMoves++;
                     score += scoreIncrease;
                     
@@ -690,11 +642,10 @@
                 }, 500);
             }
             
-            function togglePause() { playSound('tap'); isPaused = !isPaused; showOverlay(document.getElementById('pause-overlay')); }
-            function resumeGame() { playSound('tap'); isPaused = false; hideOverlay(document.getElementById('pause-overlay')); }
+            function togglePause() { isPaused = !isPaused; showOverlay(document.getElementById('pause-overlay')); }
+            function resumeGame() { isPaused = false; hideOverlay(document.getElementById('pause-overlay')); }
 
             async function activateHammer() {
-                playSound('tap');
                 if(isPaused || isGameOver || document.body.classList.contains('hammer-mode')) return;
                 
                 const hammerButton = document.getElementById('hammer-btn');
@@ -732,7 +683,6 @@
                 if (!isHammerModeActive) return;
                 const clickedTileEl = e.target.closest('.tile');
                 if (clickedTileEl) {
-                    playSound('merge');
                     const row = parseInt(clickedTileEl.style.getPropertyValue('--row'));
                     const col = parseInt(clickedTileEl.style.getPropertyValue('--col'));
                     if (!isNaN(row) && !isNaN(col) && grid[row][col]) {
@@ -761,49 +711,51 @@
 
             function setupEventListeners() {
                 // One-time audio initializer on first user interaction
-                document.body.addEventListener('click', async () => {
-                    if (typeof Tone !== 'undefined' && Tone.context.state !== 'running') {
-                        await Tone.start();
-                        console.log('Audio context started');
-                    }
+                const startAudio = () => {
                     if (isMusicOn && bgMusic.paused) {
-                        bgMusic.play().catch(e => console.error("Initial music play failed", e));
+                        bgMusic.play().catch(e => console.error("Initial music play failed. User interaction is required.", e));
                     }
-                }, { once: true });
+                    // Remove listeners after the first interaction
+                    document.body.removeEventListener('click', startAudio);
+                    document.body.removeEventListener('touchstart', startAudio);
+                };
+
+                document.body.addEventListener('click', startAudio);
+                document.body.addEventListener('touchstart', startAudio);
                 
-                document.getElementById('play-btn').addEventListener('click', () => { playSound('tap'); startGame(); });
+                document.getElementById('play-btn').addEventListener('click', () => { startGame(); });
                 
                 document.getElementById('stats-btn').addEventListener('click', () => {
-                    playSound('tap');
                     document.getElementById('stats-best-score').textContent = stats.bestScore;
                     document.getElementById('stats-total-games').textContent = stats.totalGames;
                     document.getElementById('stats-total-moves').textContent = stats.totalMoves;
                     document.getElementById('stats-max-tile').textContent = stats.maxTile;
                     showOverlay(document.getElementById('stats-overlay'));
                 });
-                document.getElementById('stats-close-btn').addEventListener('click', () => { playSound('tap'); hideOverlay(document.getElementById('stats-overlay')); });
+                document.getElementById('stats-close-btn').addEventListener('click', () => { hideOverlay(document.getElementById('stats-overlay')); });
 
-                document.getElementById('settings-btn').addEventListener('click', () => { playSound('tap'); showOverlay(document.getElementById('settings-overlay')); });
-                document.getElementById('settings-close-btn').addEventListener('click', () => { playSound('tap'); hideOverlay(document.getElementById('settings-overlay')); });
+                document.getElementById('settings-btn').addEventListener('click', () => { showOverlay(document.getElementById('settings-overlay')); });
+                document.getElementById('settings-close-btn').addEventListener('click', () => { hideOverlay(document.getElementById('settings-overlay')); });
 
                 document.getElementById('pause-btn').addEventListener('click', togglePause);
                 document.getElementById('hammer-btn').addEventListener('click', activateHammer);
                 document.getElementById('resume-btn').addEventListener('click', resumeGame);
-                document.getElementById('pause-restart-btn').addEventListener('click', () => { playSound('tap'); resumeGame(); startGame(); });
-                document.getElementById('pause-menu-btn').addEventListener('click', () => { playSound('tap'); resumeGame(); bgMusic.pause(); showScreen(document.getElementById('main-menu')); });
+                document.getElementById('pause-restart-btn').addEventListener('click', () => { resumeGame(); startGame(); });
+                document.getElementById('pause-menu-btn').addEventListener('click', () => {
+                    resumeGame();
+                    showScreen(document.getElementById('main-menu')); 
+                });
 
-                document.getElementById('game-over-restart-btn').addEventListener('click', () => { playSound('tap'); hideOverlay(document.getElementById('game-over-overlay')); startGame(); });
-                document.getElementById('game-over-menu-btn').addEventListener('click', () => { playSound('tap'); hideOverlay(document.getElementById('game-over-overlay')); bgMusic.pause(); showScreen(document.getElementById('main-menu')); });
+                document.getElementById('game-over-restart-btn').addEventListener('click', () => { hideOverlay(document.getElementById('game-over-overlay')); startGame(); });
+                document.getElementById('game-over-menu-btn').addEventListener('click', () => {
+                    hideOverlay(document.getElementById('game-over-overlay'));
+                    showScreen(document.getElementById('main-menu'));
+                });
                 
                 document.getElementById('theme-checkbox').addEventListener('change', (e) => {
                     const isDark = e.target.checked;
                     document.body.className = isDark ? 'dark-theme' : 'light-theme';
                     localStorage.setItem('2048-theme', isDark ? 'dark' : 'light');
-                });
-                
-                document.getElementById('sound-checkbox').addEventListener('change', (e) => {
-                    isSoundOn = e.target.checked;
-                    localStorage.setItem('2048-sound', isSoundOn ? 'on' : 'off');
                 });
                 
                 document.getElementById('music-checkbox').addEventListener('change', (e) => {
@@ -850,5 +802,4 @@
     </script>
 </body>
 </html>
-
 
