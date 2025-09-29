@@ -99,9 +99,9 @@
             line-height: 1; 
             color: #fff;
             text-shadow: 0 0 5px var(--neon-cyan), 0 0 15px var(--neon-cyan), 0 0 30px var(--neon-cyan), 0 0 50px var(--neon-cyan);
-            animation: flicker 1.5s infinite alternate;
+            animation: flicker 3s infinite alternate;
         }
-        @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { text-shadow: 0 0 4px #fff, 0 0 11px var(--neon-cyan), 0 0 19px var(--neon-cyan), 0 0 40px var(--neon-cyan), 0 0 80px var(--neon-cyan); } 20%, 24%, 55% { text-shadow: none; } }
+        @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { text-shadow: 0 0 4px #fff, 0 0 11px var(--neon-cyan), 0 0 19px var(--neon-cyan), 0 0 40px var(--neon-cyan), 0 0 80px var(--neon-cyan); } 20% { text-shadow: none; } }
         
         #main-menu .subtitle { 
             font-family: 'Orbitron', sans-serif;
@@ -138,7 +138,7 @@
             box-shadow: inset 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
         }
         
-        #game-screen { justify-content: flex-start; gap: 20px; padding-top: 40px; }
+        #game-screen { justify-content: center; gap: 20px; padding-top: 20px; }
         .game-area { display: flex; flex-direction: column; width: 100%; gap: 20px; }
 
         .game-header { 
@@ -237,6 +237,8 @@
         .tile[data-value="2048"] { background-color: var(--c-2048); color: var(--t-2048); font-size: 1.7rem; box-shadow: var(--s-2048);} 
         .tile[data-value="4096"] { background-color: var(--c-super); color: var(--t-super); font-size: 1.7rem; box-shadow: var(--s-super);} 
         .tile[data-value="8192"] { background-color: var(--c-super); color: var(--t-super); font-size: 1.5rem; box-shadow: var(--s-super);}
+        .tile[data-value="16384"] { background-color: var(--c-super); color: var(--t-super); font-size: 1.3rem; box-shadow: var(--s-super);}
+        .tile[data-value="32768"] { background-color: var(--c-super); color: var(--t-super); font-size: 1.1rem; box-shadow: var(--s-super);}
         
         .tile.new { animation: appear 0.2s ease-out; }
         .tile.merged { animation: pop 0.25s ease-out 0.08s; z-index: 20; }
@@ -264,6 +266,7 @@
         
         .settings-option { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px 0; }
         .settings-option span:first-child { font-size: 1.2rem; font-weight: 700; }
+        .theme-switch-wrapper { display: flex; align-items: center; gap: 10px; }
         .theme-switch { display: inline-block; height: 30px; position: relative; width: 56px; }
         .theme-switch input { display:none; }
         .slider { background-color: var(--neon-cell-bg); bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 30px; border: 1px solid var(--neon-pink); }
@@ -322,7 +325,7 @@
         </div>
 
         <!-- Overlays -->
-        <div id="stats-overlay" class="overlay hidden"><div id="stats-content" class="overlay-content"><h2>Статистика</h2><div class="stats-row"><div class="stats-item"><span>Лучший счет</span><span id="stats-best-score">0</span></div><div class="stats-item"><span>Всего игр</span><span id="stats-total-games">0</span></div><div class="stats-item"><span>Всего ходов</span><span id="stats-total-moves">0</span></div><div class="stats-item"><span>Макс. плитка</span><span id="stats-max-tile">0</span></div></div><div class="btn-group"><button id="stats-close-btn" class="btn">Закрыть</button></div></div></div>
+        <div id="stats-overlay" class="overlay hidden"><div id="stats-content" class="overlay-content"><h2>Статистика</h2><div class="stats-row"><div class="stats-item"><span>Лучший счет</span><span id="stats-best-score">0</span></div><div class="stats-item"><span>Всего игр</span><span id="stats-total-games">0</span></div><div class="stats-item"><span>Макс. число</span><span id="stats-max-tile">0</span></div></div><div class="btn-group"><button id="stats-close-btn" class="btn">Закрыть</button></div></div></div>
         <div id="pause-overlay" class="overlay hidden"><div class="overlay-content"><h2>Пауза</h2><div class="btn-group"><button id="resume-btn" class="btn">Продолжить</button><button id="pause-restart-btn" class="btn">Начать заново</button><button id="pause-menu-btn" class="btn">Главное меню</button></div></div></div>
         <div id="game-over-overlay" class="overlay hidden"><div class="overlay-content"><h2 id="game-over-title">Игра окончена!</h2><p id="game-over-text">Вы проиграли. Попробуйте снова!</p><div class="btn-group"><button id="game-over-restart-btn" class="btn">Играть снова</button><button id="game-over-menu-btn" class="btn">Главное меню</button></div></div></div>
         
@@ -757,7 +760,6 @@
                 document.getElementById('stats-btn').addEventListener('click', () => {
                     document.getElementById('stats-best-score').textContent = stats.bestScore;
                     document.getElementById('stats-total-games').textContent = stats.totalGames;
-                    document.getElementById('stats-total-moves').textContent = stats.totalMoves;
                     document.getElementById('stats-max-tile').textContent = stats.maxTile;
                     showOverlay(document.getElementById('stats-overlay'));
                 });
@@ -824,4 +826,5 @@
     </script>
 </body>
 </html>
+
 
