@@ -3,46 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>2048</title>
+    <title>2048 NEON</title>
     <!-- VK Bridge -->
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --light-bg: #F7F9FC;
-            --light-text: #4A4A4A;
-            --light-grid-bg: #B8C2CC;
-            --light-cell-bg: #DCE2E8;
-            --light-ui-bg: #FFFFFF;
-            --light-accent: #6C63FF;
-            --light-accent-hover: #574BFF;
+            --neon-bg: #0D0221;
+            --neon-grid-bg: #140535;
+            --neon-cell-bg: rgba(10, 10, 20, 0.5);
+            --neon-text: #E0E0E0;
+            --neon-pink: #F0F;
+            --neon-cyan: #0FF;
+            --neon-purple: #9400D3;
 
-            --dark-bg: #1A1A2E;
-            --dark-text: #E0E0E0;
-            --dark-grid-bg: #33334D;
-            --dark-cell-bg: #4C4C66;
-            --dark-ui-bg: #25253B;
-            --dark-accent: #8A85FF;
-            --dark-accent-hover: #A09CFF;
+            /* Tile Colors & Glows */
+            --c-2: #0077B6; --t-2: #fff; --s-2: 0 0 8px #00B4D8;
+            --c-4: #00B4D8; --t-4: #fff; --s-4: 0 0 10px #00B4D8;
+            --c-8: #F72585; --t-8: #fff; --s-8: 0 0 12px #F72585;
+            --c-16: #B5179E; --t-16: #fff; --s-16: 0 0 14px #B5179E;
+            --c-32: #7209B7; --t-32: #fff; --s-32: 0 0 16px #7209B7;
+            --c-64: #560BAD; --t-64: #fff; --s-64: 0 0 18px #560BAD;
+            --c-128: #480CA8; --t-128: #fff; --s-128: 0 0 20px #480CA8;
+            --c-256: #3A0CA3; --t-256: #fff; --s-256: 0 0 22px #3A0CA3;
+            --c-512: #3F37C9; --t-512: #fff; --s-512: 0 0 24px #3F37C9;
+            --c-1024: #4361EE; --t-1024: #fff; --s-1024: 0 0 26px #4361EE;
+            --c-2048: #4895EF; --t-2048: #fff; --s-2048: 0 0 28px #4895EF;
+            --c-super: #4CC9F0; --t-super: #0D0221; --s-super: 0 0 30px #4CC9F0, 0 0 45px #fff;
             
-            /* Original colors for 2 and 4 tiles */
-            --c-2: #eee4da; --t-2: #776e65;
-            --c-4: #ede0c8; --t-4: #776e65;
-            --c-8: #f2b179; --t-8: #ffffff;
-            --c-16: #f59563; --t-16: #ffffff;
-            --c-32: #f67c5f; --t-32: #ffffff;
-            --c-64: #f65e3b; --t-64: #ffffff;
-            --c-128: #ffcc80; --t-128: #ffffff;
-            --c-256: #ffc107; --t-256: #ffffff;
-            --c-512: #ffab40; --t-512: #ffffff;
-            --c-1024: #ff9100; --t-1024: #ffffff;
-            --c-2048: #ff6d00; --t-2048: #ffffff;
-            --c-super: #4A148C; --t-super: #ffffff;
-
             --border-radius: 12px;
-            --gap: 15px;
+            --gap: 12px;
             --anim-speed: 0.12s;
         }
 
@@ -57,8 +49,11 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Roboto', sans-serif;
             position: fixed;
+            background-color: var(--neon-bg);
+            color: var(--neon-text);
+            background-image: linear-gradient(rgba(13, 2, 33, 0.9), rgba(13, 2, 33, 1)), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Cg fill-rule="evenodd"%3E%3Cg fill="%231a0a4a" fill-opacity="0.2"%3E%3Cpath opacity=".5" d="M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z"/%3E%3Cpath d="M6 5V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1H6v-9H0v-1h6v-9H0v-1h6v-9H0v-1h6v-9H0v-1h6v-9H0v-1h6v-9H0v-1h6v-9H0v-1h6V5zm10 0h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v-9h9V5h-9zm-10 0V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm10 0h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v-9h9V5h-9zm-10 0V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm10 0h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v-9h9V5h-9zm-10 0V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm10 0h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v9h-1v-9h-9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v9h9v-9h9v-9h-9v-9h9V5h-9zm-10 0V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h9V0h1v5h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
         }
 
         body {
@@ -66,11 +61,7 @@
             justify-content: center;
             align-items: center;
             -webkit-user-select: none; user-select: none;
-            transition: background-color 0.3s, color 0.3s;
         }
-        body.light-theme { background-color: var(--light-bg); color: var(--light-text); }
-        body.dark-theme { background-color: var(--dark-bg); color: var(--dark-text); }
-        body.hammer-mode { cursor: crosshair; }
 
         .container {
             width: 100%;
@@ -99,146 +90,191 @@
             transition: opacity 0.4s, transform 0.4s;
         }
         .screen.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
+        
+        #main-menu .title-container { text-align: center; }
+        #main-menu .title { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem; 
+            font-weight: 900; 
+            line-height: 1; 
+            color: #fff;
+            text-shadow: 0 0 5px var(--neon-cyan), 0 0 15px var(--neon-cyan), 0 0 30px var(--neon-cyan), 0 0 50px var(--neon-cyan);
+            animation: flicker 1.5s infinite alternate;
+        }
+        @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { text-shadow: 0 0 4px #fff, 0 0 11px var(--neon-cyan), 0 0 19px var(--neon-cyan), 0 0 40px var(--neon-cyan), 0 0 80px var(--neon-cyan); } 20%, 24%, 55% { text-shadow: none; } }
+        
+        #main-menu .subtitle { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            margin-top: 10px; 
+            letter-spacing: 2px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink);
+        }
 
-        .title-container { text-align: center; }
-        #main-menu .title { font-size: 6rem; font-weight: 900; line-height: 1; text-shadow: 3px 3px 0 rgba(0,0,0,0.05); }
-        #main-menu .subtitle { font-size: 1.5rem; font-weight: 700; margin-top: -10px; letter-spacing: 2px; opacity: 0.7; }
-        .light-theme #main-menu .title { color: #333; }
-        .dark-theme #main-menu .title { color: var(--dark-text); }
-
-        .menu-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; margin-top: 20px; }
+        .menu-buttons { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 300px; margin-top: 30px; }
 
         .btn {
-            padding: 20px;
+            padding: 18px;
             font-size: 1.1rem;
+            font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            border: none;
+            border: 2px solid var(--neon-cyan);
             border-radius: var(--border-radius);
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, transform 0.2s;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
+            color: var(--neon-cyan);
+            background-color: transparent;
+            box-shadow: inset 0 0 8px rgba(0, 255, 255, 0.4), 0 0 8px rgba(0, 255, 255, 0.4);
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
-        .light-theme .btn { background-color: var(--light-accent); color: #fff; }
-        .dark-theme .btn { background-color: var(--dark-accent); color: var(--dark-bg); }
-        .light-theme .btn:hover { background-color: var(--light-accent-hover); }
-        .dark-theme .btn:hover { background-color: var(--dark-accent-hover); }
+        .btn:hover { 
+            transform: translateY(-3px); 
+            background-color: rgba(0, 255, 255, 0.1);
+            color: #fff;
+            border-color: #fff;
+            box-shadow: inset 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+        }
         
-        .theme-switch-wrapper { display: flex; align-items: center; gap: 10px; }
-        .theme-switch { display: inline-block; height: 30px; position: relative; width: 56px; }
-        .theme-switch input { display:none; }
-        .slider { background-color: #ccc; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 30px; }
-        .slider:before { background-color: #fff; bottom: 4px; content: ""; height: 22px; left: 4px; position: absolute; transition: .4s; width: 22px; border-radius: 50%; }
-        .light-theme input:checked + .slider { background-color: var(--light-accent); }
-        .dark-theme input:checked + .slider { background-color: var(--dark-accent); }
-        input:checked + .slider:before { transform: translateX(26px); }
-        
-        #game-screen { justify-content: center; gap: 20px; }
+        #game-screen { justify-content: flex-start; gap: 20px; padding-top: 40px; }
         .game-area { display: flex; flex-direction: column; width: 100%; gap: 20px; }
 
-        .game-header { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .game-header .title-container { text-align: left; }
-        .game-header .title { font-size: 3.5rem; font-weight: 900; }
-        .game-header .subtitle { font-size: 1rem; font-weight: 700; margin-top: -5px; letter-spacing: 1.5px; opacity: 0.7; }
-        .light-theme .game-header .title { color: #333; }
-        .dark-theme .game-header .title { color: var(--dark-text); }
-
-        .score-container { display: flex; gap: 10px; }
-        .score-box { padding: 8px 22px; border-radius: var(--border-radius); text-align: center; }
-        .light-theme .score-box { background-color: var(--light-grid-bg); }
-        .dark-theme .score-box { background-color: var(--dark-grid-bg); }
-        .score-box span:first-child { font-size: 0.75rem; font-weight: 700; display: block; text-transform: uppercase; color: #f9f6f2; opacity: 0.8;}
-        .score-box span:last-child { font-size: 1.6rem; font-weight: 700; color: #fff; line-height: 1.2; }
-
-        .game-controls { width: 100%; display: flex; justify-content: flex-end; align-items: center; gap: 10px;}
-        #pause-btn, #hammer-btn { background: none; border: none; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s; position: relative; }
-        .light-theme #pause-btn, .light-theme #hammer-btn { background-color: var(--light-grid-bg); }
-        .dark-theme #pause-btn, .dark-theme #hammer-btn { background-color: var(--dark-grid-bg); }
-        #pause-btn svg, #hammer-btn svg { width: 28px; height: 28px; fill: #fff; }
+        .game-header { 
+            width: 100%; 
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 10px;
+        }
         
-        .ad-label { position: absolute; bottom: 0; right: -2px; background-color: #ff4757; color: white; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 6px; }
+        .header-left, .header-right { display: flex; gap: 10px; }
+        .header-right { justify-content: flex-end; }
+
+        .score-container { display: flex; justify-content: center; gap: 10px; }
+        .score-box { 
+            padding: 8px 15px; 
+            border-radius: var(--border-radius); 
+            text-align: center; 
+            background-color: var(--neon-grid-bg);
+            border: 1px solid var(--neon-purple);
+            box-shadow: inset 0 0 8px rgba(148, 0, 211, 0.5);
+            min-width: 90px;
+        }
+        .score-box span:first-child { font-size: 0.7rem; font-weight: 700; display: block; text-transform: uppercase; color: var(--neon-text); opacity: 0.8;}
+        .score-box span:last-child { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: #fff; 
+            line-height: 1.2; 
+            text-shadow: 0 0 4px var(--neon-cyan);
+        }
+
+        .header-btn { 
+            background: none; border: 1px solid var(--neon-pink); 
+            cursor: pointer; width: 45px; height: 45px; 
+            border-radius: 50%; display: flex; 
+            justify-content: center; align-items: center; 
+            transition: all 0.2s; 
+            position: relative; 
+            background-color: var(--neon-grid-bg);
+            box-shadow: inset 0 0 8px rgba(255, 0, 255, 0.5);
+        }
+        .header-btn:hover { 
+            border-color: #fff; 
+            box-shadow: inset 0 0 10px var(--neon-pink), 0 0 15px var(--neon-pink);
+        }
+        .header-btn svg { width: 24px; height: 24px; fill: var(--neon-pink); transition: all 0.2s;}
+        .header-btn:hover svg { fill: #fff; filter: drop-shadow(0 0 5px #fff); }
+        
+        .ad-label { position: absolute; bottom: -4px; right: -4px; background-color: var(--neon-pink); color: white; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 6px; }
 
         #game-container { width: 100%; aspect-ratio: 1 / 1; position: relative; margin-top: 10px; }
-        #grid-container { width: 100%; height: 100%; border-radius: var(--border-radius); display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: var(--gap); padding: var(--gap); }
-        .light-theme #grid-container { background-color: var(--light-grid-bg); }
-        .dark-theme #grid-container { background-color: var(--dark-grid-bg); }
-        .grid-cell { border-radius: 8px; }
-        .light-theme .grid-cell { background-color: var(--light-cell-bg); }
-        .dark-theme .grid-cell { background-color: var(--dark-cell-bg); }
+        #grid-container { 
+            width: 100%; height: 100%; 
+            border-radius: var(--border-radius); 
+            display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); 
+            gap: var(--gap); padding: var(--gap); 
+            background-color: var(--neon-grid-bg);
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 20px rgba(148, 0, 211, 0.5), inset 0 0 15px rgba(148, 0, 211, 0.4);
+        }
+        .grid-cell { 
+            border-radius: 8px; 
+            background-color: var(--neon-cell-bg); 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
         
         #tile-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         
-        body.hammer-mode #tile-container { pointer-events: auto; }
-        body.hammer-mode .tile { cursor: pointer; box-shadow: 0 0 20px #ff4757; transform: scale(1.08); z-index: 99; }
-
         .tile {
             --size: calc((100% - 5 * var(--gap)) / 4);
             position: absolute;
-            width: var(--size);
-            height: var(--size);
+            width: var(--size); height: var(--size);
             top: calc(var(--row) * (var(--size) + var(--gap)) + var(--gap));
             left: calc(var(--col) * (var(--size) + var(--gap)) + var(--gap));
             border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
             font-weight: 900;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.2rem;
-            transition: top var(--anim-speed) ease-out, left var(--anim-speed) ease-out, transform 0.2s;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 2rem;
+            transition: top var(--anim-speed) ease-out, left var(--anim-speed) ease-out, transform 0.2s, box-shadow 0.2s;
             z-index: 10;
         }
-        .tile[data-value="2"] { background-color: var(--c-2); color: var(--t-2); } .tile[data-value="4"] { background-color: var(--c-4); color: var(--t-4); } .tile[data-value="8"] { background-color: var(--c-8); color: var(--t-8); } .tile[data-value="16"] { background-color: var(--c-16); color: var(--t-16); } .tile[data-value="32"] { background-color: var(--c-32); color: var(--t-32); } .tile[data-value="64"] { background-color: var(--c-64); color: var(--t-64); } .tile[data-value="128"] { background-color: var(--c-128); color: var(--t-128); } .tile[data-value="256"] { background-color: var(--c-256); color: var(--t-256); } .tile[data-value="512"] { background-color: var(--c-512); color: var(--t-512); } .tile[data-value="1024"] { background-color: var(--c-1024); color: var(--t-1024); font-size: 1.9rem; } .tile[data-value="2048"] { background-color: var(--c-2048); color: var(--t-2048); font-size: 1.9rem; } .tile[data-value="4096"] { background-color: var(--c-super); color: var(--t-super); font-size: 1.9rem; } .tile[data-value="8192"] { background-color: var(--c-super); color: var(--t-super); font-size: 1.7rem; }
+
+        .tile[data-value="2"] { background-color: var(--c-2); color: var(--t-2); box-shadow: var(--s-2); } 
+        .tile[data-value="4"] { background-color: var(--c-4); color: var(--t-4); box-shadow: var(--s-4); } 
+        .tile[data-value="8"] { background-color: var(--c-8); color: var(--t-8); box-shadow: var(--s-8); } 
+        .tile[data-value="16"] { background-color: var(--c-16); color: var(--t-16); box-shadow: var(--s-16); } 
+        .tile[data-value="32"] { background-color: var(--c-32); color: var(--t-32); box-shadow: var(--s-32); } 
+        .tile[data-value="64"] { background-color: var(--c-64); color: var(--t-64); box-shadow: var(--s-64); } 
+        .tile[data-value="128"] { background-color: var(--c-128); color: var(--t-128); box-shadow: var(--s-128); } 
+        .tile[data-value="256"] { background-color: var(--c-256); color: var(--t-256); box-shadow: var(--s-256); } 
+        .tile[data-value="512"] { background-color: var(--c-512); color: var(--t-512); box-shadow: var(--s-512); } 
+        .tile[data-value="1024"] { background-color: var(--c-1024); color: var(--t-1024); font-size: 1.7rem; box-shadow: var(--s-1024);} 
+        .tile[data-value="2048"] { background-color: var(--c-2048); color: var(--t-2048); font-size: 1.7rem; box-shadow: var(--s-2048);} 
+        .tile[data-value="4096"] { background-color: var(--c-super); color: var(--t-super); font-size: 1.7rem; box-shadow: var(--s-super);} 
+        .tile[data-value="8192"] { background-color: var(--c-super); color: var(--t-super); font-size: 1.5rem; box-shadow: var(--s-super);}
         
         .tile.new { animation: appear 0.2s ease-out; }
         .tile.merged { animation: pop 0.25s ease-out 0.08s; z-index: 20; }
         .tile.merging-out { animation: merge-out 0.2s ease-in forwards; z-index: 0; }
         
         @keyframes appear { from { transform: scale(0.8) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.25); filter: brightness(1.5); } 100% { transform: scale(1); filter: brightness(1); } }
         @keyframes merge-out { from { transform: scale(1); opacity: 1; } to { transform: scale(0); opacity: 0; } }
         
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; transition: opacity 0.3s, backdrop-filter 0.3s; z-index: 100; }
-        .light-theme .overlay { background-color: rgba(247, 249, 252, 0.5); }
-        .dark-theme .overlay { background-color: rgba(26, 26, 46, 0.5); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; transition: opacity 0.3s, backdrop-filter 0.3s; z-index: 100; background-color: rgba(13, 2, 33, 0.5); }
         .overlay.hidden { opacity: 0; pointer-events: none; backdrop-filter: blur(0px); }
         .overlay:not(.hidden) { backdrop-filter: blur(8px); }
-        .overlay-content { padding: 30px; border-radius: var(--border-radius); text-align: center; width: 90%; max-width: 380px; display: flex; flex-direction: column; gap: 20px; animation: slideIn 0.3s ease-out; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .light-theme .overlay-content { background-color: var(--light-ui-bg); }
-        .dark-theme .overlay-content { background-color: var(--dark-ui-bg); }
+        .overlay-content { padding: 30px; border-radius: var(--border-radius); text-align: center; width: 90%; max-width: 380px; display: flex; flex-direction: column; gap: 20px; animation: slideIn 0.3s ease-out; background-color: var(--neon-grid-bg); border: 2px solid var(--neon-pink); box-shadow: 0 0 30px rgba(255, 0, 255, 0.5); }
         @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .overlay-content h2 { font-size: 2.2rem; font-weight: 900; }
+        .overlay-content h2 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; color: #fff; text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink); }
         .overlay-content p { font-size: 1.1rem; }
         .overlay-content .btn-group { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
-        
-        #stats-content .stats-row { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            width: 100%; 
-            align-items: center; 
-            margin-top: 10px; 
-        }
-        .stats-item { 
-            padding: 15px; 
-            border-radius: var(--border-radius); 
-            text-align: center; 
-            width: 100%; 
-            max-width: 280px;
-        }
-        .light-theme .stats-item { background-color: var(--light-cell-bg); }
-        .dark-theme .stats-item { background-color: var(--dark-cell-bg); }
-        .stats-item span:first-child { display: block; font-size: 0.8rem; opacity: 0.8; font-weight: 700; text-transform: uppercase;}
-        .stats-item span:last-child { display: block; font-size: 1.7rem; font-weight: 700; }
+        .overlay-content .btn { border-color: var(--neon-pink); color: var(--neon-pink); box-shadow: inset 0 0 8px rgba(255, 0, 255, 0.4), 0 0 8px rgba(255, 0, 255, 0.4); }
+        .overlay-content .btn:hover { background-color: rgba(255, 0, 255, 0.1); color: #fff; border-color: #fff; box-shadow: inset 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink); }
 
-        /* Styles for settings menu */
+        #stats-content .stats-row { display: flex; flex-direction: column; gap: 15px; width: 100%; align-items: center; margin-top: 10px; }
+        .stats-item { padding: 15px; border-radius: var(--border-radius); text-align: center; width: 100%; max-width: 280px; background-color: var(--neon-cell-bg); }
+        .stats-item span:first-child { display: block; font-size: 0.8rem; opacity: 0.8; font-weight: 700; text-transform: uppercase;}
+        .stats-item span:last-child { display: block; font-size: 1.7rem; font-weight: 700; color: var(--neon-cyan); text-shadow: 0 0 4px var(--neon-cyan); }
+        
         .settings-option { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px 0; }
         .settings-option span:first-child { font-size: 1.2rem; font-weight: 700; }
-        
-        .toast-notification { position: fixed; bottom: 15%; left: 50%; transform: translateX(-50%); background-color: #2c3e50; color: white; padding: 12px 24px; border-radius: var(--border-radius); font-size: 0.9rem; font-weight: 700; z-index: 2000; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: none; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .theme-switch { display: inline-block; height: 30px; position: relative; width: 56px; }
+        .theme-switch input { display:none; }
+        .slider { background-color: var(--neon-cell-bg); bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 30px; border: 1px solid var(--neon-pink); }
+        .slider:before { background-color: var(--neon-pink); bottom: 4px; content: ""; height: 22px; left: 4px; position: absolute; transition: .4s; width: 22px; border-radius: 50%; box-shadow: 0 0 8px var(--neon-pink); }
+        input:checked + .slider { background-color: rgba(0,255,255,0.2); border-color: var(--neon-cyan); }
+        input:checked + .slider:before { transform: translateX(26px); background-color: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
+
+        .toast-notification { position: fixed; bottom: 15%; left: 50%; transform: translateX(-50%); background-color: var(--neon-grid-bg); border: 1px solid var(--neon-pink); color: white; padding: 12px 24px; border-radius: var(--border-radius); font-size: 0.9rem; font-weight: 700; z-index: 2000; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: none; box-shadow: 0 0 15px var(--neon-pink); }
         .toast-notification.show { opacity: 1; transform: translate(-50%, -20px); }
 
-        @media (max-width: 420px) { :root { --gap: 10px; } .container { padding: 15px; } .game-header .title { font-size: 3rem; } .score-box { padding: 5px 15px; } .score-box span:last-child { font-size: 1.3rem; } .tile { font-size: 1.8rem; } .tile[data-value="1024"], .tile[data-value="2048"], .tile[data-value="4096"] { font-size: 1.5rem; } .tile[data-value="8192"] { font-size: 1.3rem; } .overlay-content h2 { font-size: 2rem; } }
+        @media (max-width: 420px) { :root { --gap: 10px; } .container { padding: 15px; } .game-header .title { font-size: 3rem; } .score-box { padding: 5px 12px; min-width: 80px;} .score-box span:last-child { font-size: 1.3rem; } .tile { font-size: 1.8rem; } .tile[data-value="1024"], .tile[data-value="2048"], .tile[data-value="4096"] { font-size: 1.5rem; } .tile[data-value="8192"] { font-size: 1.3rem; } .overlay-content h2 { font-size: 2rem; } }
     </style>
 </head>
 <body>
@@ -249,7 +285,7 @@
         <div id="main-menu" class="screen">
             <div class="title-container">
                 <h1 class="title">2048</h1>
-                <p class="subtitle">мастерс</p>
+                <p class="subtitle">NEON</p>
             </div>
             <div class="menu-buttons">
                 <button id="play-btn" class="btn">Играть</button>
@@ -262,27 +298,25 @@
         <div id="game-screen" class="screen hidden">
             <div class="game-area">
                 <div class="game-header">
-                    <div class="title-container">
-                        <h1 class="title">2048</h1>
-                        <p class="subtitle">мастерс</p>
+                    <div class="header-left">
+                        <button id="undo-btn" class="header-btn" title="Отменить ход (за рекламу)">
+                            <svg viewBox="0 0 24 24"><path d="M12.5,8C9.85,8 7.45,9 5.6,10.6L2,7V16H11L7.38,12.38C8.77,11.22 10.54,10.5 12.5,10.5C16.04,10.5 19.05,12.81 20.1,16L22.47,15.22C21.08,11.03 17.15,8 12.5,8Z"/></svg>
+                            <span class="ad-label">AD</span>
+                        </button>
                     </div>
                     <div class="score-container">
                         <div class="score-box"><span>Счет</span><span id="current-score">0</span></div>
                         <div class="score-box"><span>Лучший</span><span id="best-score">0</span></div>
                     </div>
+                    <div class="header-right">
+                         <button id="pause-btn" class="header-btn" title="Пауза">
+                            <svg viewBox="0 0 24 24"><path d="M14,19H18V5H14M6,19H10V5H6V19Z" /></svg>
+                        </button>
+                    </div>
                 </div>
                 <div id="game-container">
                     <div id="grid-container"></div>
                     <div id="tile-container"></div>
-                </div>
-                <div class="game-controls">
-                     <button id="hammer-btn" title="Убрать плитку (за рекламу)">
-                        <svg viewBox="0 0 24 24"><path d="M20.7,6.3C20.3,5.9,19.7,6,19.3,6.3L14,11.6L12.4,10L18.7,3.7C19.1,3.3,19,2.7,18.7,2.3C18.3,1.9,17.7,2,17.3,2.3L11,8.6L9.4,7L15.7,0.7C16.1,0.3,16,-0.3,15.7,-0.7C15.3,-1.1,14.7,-1,14.3,-0.7L2,11.6V20H10.4L21.7,8.7C22.1,8.3,22,7.7,21.7,7.3L20.7,6.3Z" /></svg>
-                        <span class="ad-label">AD</span>
-                    </button>
-                    <button id="pause-btn" title="Пауза">
-                        <svg viewBox="0 0 24 24"><path d="M14,19H18V5H14M6,19H10V5H6V19Z" /></svg>
-                    </button>
                 </div>
             </div>
         </div>
@@ -295,17 +329,6 @@
         <div id="settings-overlay" class="overlay hidden">
             <div class="overlay-content">
                 <h2>Настройки</h2>
-                <div class="settings-option">
-                    <span>Тема</span>
-                    <div class="theme-switch-wrapper">
-                        <span>☀️</span>
-                        <label class="theme-switch">
-                            <input type="checkbox" id="theme-checkbox">
-                            <span class="slider"></span>
-                        </label>
-                        <span>🌙</span>
-                    </div>
-                </div>
                 <div class="settings-option">
                     <span>Музыка</span>
                      <div class="theme-switch-wrapper">
@@ -336,10 +359,12 @@
             const bgMusic = document.getElementById('bg-music');
             
             let grid = []; 
+            let previousGrid = [];
             let score = 0; 
+            let previousScore = 0;
             let isGameOver = false; 
             let isPaused = false; 
-            let isHammerModeActive = false;
+            let hasMadeMoveSinceUndo = true; // Allow undo on first move
             let isMusicOn = true;
             let wasMusicPlaying = false;
             let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
@@ -348,7 +373,7 @@
             let vkUserId = null;
             
             // --- VK Bridge Integration ---
-            const STATS_VK_KEY = '2048GameStats_v2';
+            const STATS_VK_KEY = '2048NeonStats_v1';
 
             async function initVK() {
                 try {
@@ -426,10 +451,6 @@
             }
             
             function setupSettings() {
-                const isDarkMode = localStorage.getItem('2048-theme') === 'dark';
-                document.body.className = isDarkMode ? 'dark-theme' : 'light-theme';
-                document.getElementById('theme-checkbox').checked = isDarkMode;
-
                 const musicSetting = localStorage.getItem('2048-music');
                 isMusicOn = musicSetting === null ? true : musicSetting === 'on';
                 document.getElementById('music-checkbox').checked = isMusicOn;
@@ -460,12 +481,14 @@
 
             // --- Game Logic ---
             function startGame() {
-                isGameOver = false; isPaused = false;
-                document.body.classList.remove('hammer-mode');
-                isHammerModeActive = false;
+                isGameOver = false; 
+                isPaused = false;
                 score = 0;
+                previousScore = 0;
                 stats.totalGames++;
                 grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
+                previousGrid = JSON.parse(JSON.stringify(grid));
+                hasMadeMoveSinceUndo = true;
                 tileContainer.innerHTML = '';
 
                 addRandomTile();
@@ -519,8 +542,12 @@
             }
             
             function handleMove(direction) {
-                if (isGameOver || isPaused || isHammerModeActive) return;
+                if (isGameOver || isPaused) return;
 
+                // Save state before moving
+                previousGrid = JSON.parse(JSON.stringify(grid));
+                previousScore = score;
+                
                 const moveVector = { up: { r: -1, c: 0 }, down: { r: 1, c: 0 }, left: { r: 0, c: -1 }, right: { r: 0, c: 1 } }[direction];
                 const traversal = buildTraversal(moveVector);
                 let moved = false;
@@ -576,6 +603,7 @@
                 });
 
                 if (moved) {
+                    hasMadeMoveSinceUndo = true;
                     stats.totalMoves++;
                     score += scoreIncrease;
                     
@@ -645,11 +673,14 @@
             function togglePause() { isPaused = !isPaused; showOverlay(document.getElementById('pause-overlay')); }
             function resumeGame() { isPaused = false; hideOverlay(document.getElementById('pause-overlay')); }
 
-            async function activateHammer() {
-                if(isPaused || isGameOver || document.body.classList.contains('hammer-mode')) return;
+            async function handleUndo() {
+                if(isPaused || isGameOver || !hasMadeMoveSinceUndo) {
+                    showToast('Сначала сделайте ход');
+                    return;
+                }
                 
-                const hammerButton = document.getElementById('hammer-btn');
-                hammerButton.disabled = true;
+                const undoButton = document.getElementById('undo-btn');
+                undoButton.disabled = true;
 
                 if (isVK) {
                     try {
@@ -657,8 +688,7 @@
                         if (adStatus.result) {
                             const adResult = await vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' });
                             if (adResult.result) {
-                                isHammerModeActive = true;
-                                document.body.classList.add('hammer-mode');
+                                restorePreviousState();
                             } else {
                                 showToast('Просмотрите рекламу до конца');
                             }
@@ -669,29 +699,29 @@
                         console.error('Rewarded ad error:', error);
                         showToast('Ошибка при показе рекламы');
                     } finally {
-                        hammerButton.disabled = false;
+                        undoButton.disabled = false;
                     }
                 } else {
                     console.log("Reward Ad mocked for testing.");
-                    isHammerModeActive = true;
-                    document.body.classList.add('hammer-mode');
-                    hammerButton.disabled = false;
+                    restorePreviousState();
+                    undoButton.disabled = false;
                 }
             }
             
-            function onTileClick(e) {
-                if (!isHammerModeActive) return;
-                const clickedTileEl = e.target.closest('.tile');
-                if (clickedTileEl) {
-                    const row = parseInt(clickedTileEl.style.getPropertyValue('--row'));
-                    const col = parseInt(clickedTileEl.style.getPropertyValue('--col'));
-                    if (!isNaN(row) && !isNaN(col) && grid[row][col]) {
-                        grid[row][col] = null;
-                        clickedTileEl.remove();
-                        isHammerModeActive = false;
-                        document.body.classList.remove('hammer-mode');
-                    }
-                }
+            function restorePreviousState() {
+                if (previousGrid.length === 0) return;
+                
+                grid = JSON.parse(JSON.stringify(previousGrid));
+                score = previousScore;
+                hasMadeMoveSinceUndo = false;
+                
+                // Re-draw the entire board
+                tileContainer.innerHTML = '';
+                grid.flat().filter(Boolean).forEach(tile => {
+                    createTileElement(tile, false);
+                });
+                updateScoreDisplay();
+                showToast('Ход отменен!');
             }
 
             function showToast(message) {
@@ -715,7 +745,6 @@
                     if (isMusicOn && bgMusic.paused) {
                         bgMusic.play().catch(e => console.error("Initial music play failed. User interaction is required.", e));
                     }
-                    // Remove listeners after the first interaction
                     document.body.removeEventListener('click', startAudio);
                     document.body.removeEventListener('touchstart', startAudio);
                 };
@@ -738,7 +767,7 @@
                 document.getElementById('settings-close-btn').addEventListener('click', () => { hideOverlay(document.getElementById('settings-overlay')); });
 
                 document.getElementById('pause-btn').addEventListener('click', togglePause);
-                document.getElementById('hammer-btn').addEventListener('click', activateHammer);
+                document.getElementById('undo-btn').addEventListener('click', handleUndo);
                 document.getElementById('resume-btn').addEventListener('click', resumeGame);
                 document.getElementById('pause-restart-btn').addEventListener('click', () => { resumeGame(); startGame(); });
                 document.getElementById('pause-menu-btn').addEventListener('click', () => {
@@ -750,12 +779,6 @@
                 document.getElementById('game-over-menu-btn').addEventListener('click', () => {
                     hideOverlay(document.getElementById('game-over-overlay'));
                     showScreen(document.getElementById('main-menu'));
-                });
-                
-                document.getElementById('theme-checkbox').addEventListener('change', (e) => {
-                    const isDark = e.target.checked;
-                    document.body.className = isDark ? 'dark-theme' : 'light-theme';
-                    localStorage.setItem('2048-theme', isDark ? 'dark' : 'light');
                 });
                 
                 document.getElementById('music-checkbox').addEventListener('change', (e) => {
@@ -778,22 +801,21 @@
                     }
                 });
                 gameContainer.addEventListener('touchstart', (e) => {
-                    if (isPaused || isGameOver || isHammerModeActive) return;
+                    if (isPaused || isGameOver) return;
                     touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
                 }, { passive: true });
                 gameContainer.addEventListener('touchmove', (e) => {
-                    if (!touchStartX || !touchStartY || isHammerModeActive) return;
+                    if (!touchStartX || !touchStartY) return;
                     touchEndX = e.touches[0].clientX; touchEndY = e.touches[0].clientY;
                 }, { passive: true });
                 gameContainer.addEventListener('touchend', () => {
-                    if (isPaused || isGameOver || isHammerModeActive) return;
+                    if (isPaused || isGameOver) return;
                     const dx = touchEndX - touchStartX; const dy = touchEndY - touchStartY;
                     if (Math.max(Math.abs(dx), Math.abs(dy)) > 30) {
                         handleMove(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
                     }
                     touchStartX = touchStartY = touchEndX = touchEndY = 0;
                 });
-                tileContainer.addEventListener('click', onTileClick);
                 document.addEventListener('contextmenu', e => e.preventDefault());
             }
 
